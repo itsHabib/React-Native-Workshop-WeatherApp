@@ -10,19 +10,15 @@ import {
   Button,
   StyleSheet,
   Text,
-} from 'react-native';
+} from 'react-native'
+import axios from 'axios'
+
+const WEATHER_API_ENDPOINT = 'https://api.openweathermap.org/data/2.5/forecast?'
+const WEATHER_API_KEY = '0e1c3cba78434415a1875d318f184c14'
 
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-    buttonRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginBottom: 10,
-    }
+
 })
 
 export default class App extends Component {
@@ -30,46 +26,34 @@ export default class App extends Component {
       super(props)
 
       this.state = {
-          textElements: [],
+          weatherData: {}
       }
 
   }
 
-  displayTextElements() {
-      if (this.state.textElements.length != 0) {
-          return this.state.textElements.map((textElement, i) =>
-              <View>
-                  <Text>Text: {i + 1}</Text>
-              </View>
-        )
-      }
-  }
+  async grabWeatherData() {
+      console.log(`grabWeatherData`)
+      let weatherData
+      try {
+        let response = await axios.get(`${WEATHER_API_ENDPOINT}`+
+        `zip=91326&metric=imperial&APPID=${WEATHER_API_KEY}`)
+        weatherData = response.data
+        console.log(weatherData)
+        this.setState({ weatherData })
 
-  addTextElement() {
-      let length = this.state.textElements.length
-      let textElements = this.state.textElements
-      textElements.push(`Text: ${length + 1}`)
-      this.setState({ textElements })
+      } catch(err) {
+        console.log(err)
+      }
+
   }
 
   render() {
     return (
-        <View style={styles.container}>
-            <View style={styles.buttonRow}>
-                <Button
-                    title="Hello World"
-                />
-                <Button
-                    title="Hello World 2!"
-                />
-            </View>
-                <Button
-                    title="Press me!!!"
-                    onPress={this.addTextElement.bind(this)}
-                />
-            <View>
-                {this.displayTextElements()}
-            </View>
+        <View>
+            <Button
+                title="Grab Weather Data"
+                onPress={this.grabWeatherData.bind(this)}
+            />
         </View>
     )
   }
